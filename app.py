@@ -6,8 +6,8 @@ from models.predict import predict_url
 from database.db import save_prediction, get_history
 from utils.url_validator import normalize_url, is_valid_url
 
-app = Flask(__name__)
 load_dotenv()
+app = Flask(__name__)
 
 @app.route("/")
 def home():
@@ -17,6 +17,7 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     raw_url = request.form.get("url")
+
     history = get_history()
 
     if not raw_url or not raw_url.strip():
@@ -38,14 +39,15 @@ def predict():
     result = predict_url(url)
     save_prediction(url, result)
 
+    #  fetch updated history AFTER save
     history = get_history()
+
     return render_template(
         "index.html",
         prediction=result,
         history=history
     )
 
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
