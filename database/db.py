@@ -1,10 +1,18 @@
 import os
+from functools import lru_cache
+
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timezone
 
 load_dotenv()
 
+
+# The original opened a brand-new MongoClient on every call, and get_collection
+# was called three times per request. Each client spins up its own connection
+# pool and monitor threads, so the app leaked connections under load.
+@lru_cache(maxsize=1)
 def get_collection():
     MONGO_USERNAME = os.getenv("MONGO_USERNAME")
     MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
@@ -21,7 +29,7 @@ def get_collection():
         "?retryWrites=true&w=majority"
     )
 
-    client = MongoClient(uri)
+    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
     db = client[MONGO_DB_NAME]
     return db["predictions"]
 
@@ -31,11 +39,15 @@ def save_prediction(url, result):
     if collection is None:
         return
 
-    collection.insert_one({
-        "url": url,
-        "result": result,
-        "timestamp": datetime.utcnow()
-    })
+    try:
+        collection.insert_one({
+            "url": url,
+            "result": result,
+            "timestamp": datetime.now(timezone.utc)
+        })
+    except PyMongoError:
+        # A logging failure must never take down a scan.
+        pass
 
 
 def get_history(limit=10):
@@ -43,8 +55,9 @@ def get_history(limit=10):
     if collection is None:
         return []
 
-    return list(
-        collection.find()
-        .sort("timestamp", -1)   # 🔥 newest first
-        .limit(limit)
-    )
+    try:
+        return list(
+            collection.find().sort("timestamp", -1).limit(limit)
+        )
+    except PyMongoError:
+        return []

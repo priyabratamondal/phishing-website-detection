@@ -4,6 +4,10 @@ pymongo
 dnspython
 numpy
 pandas
-scikit-learn
+scikit-learn==1.7.2
+joblib
 tldextract
+requests
+beautifulsoup4
+python-whois
 gunicorn

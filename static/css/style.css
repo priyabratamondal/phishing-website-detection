@@ -107,3 +107,23 @@ footer span { padding: 0 5px; color: var(--coral); }
     .trust-row strong { display: block; margin-bottom: 3px; }
     footer { line-height: 1.7; }
 }
+/* Scan detail: signals and caveats shown under the result box */
+.scan-detail {
+  margin: 0.75rem 0 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9rem;
+}
+.scan-detail-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.scan-reasons,
+.scan-notes { margin: 0; padding-left: 1.1rem; }
+.scan-reasons li { margin-bottom: 0.3rem; }
+.scan-notes { margin-top: 0.6rem; opacity: 0.65; font-size: 0.85rem; }

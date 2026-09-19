@@ -58,6 +58,25 @@
         <span class="result-icon" aria-hidden="true">{% if 'Phishing' in prediction %}!{% else %}✓{% endif %}</span>
         <span class="result-content"><span class="result-label">Scan result</span><strong>{{ prediction }}</strong></span>
       </div>
+
+      {% if reasons or notes %}
+      <div class="scan-detail">
+        {% if reasons %}
+        <p class="scan-detail-title">Signals found</p>
+        <ul class="scan-reasons">
+          {% for reason in reasons %}<li>{{ reason }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% if notes %}
+        <ul class="scan-notes">
+          {% for note in notes %}<li>{{ note }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% if tier == 'lexical' %}
+        <p class="scan-notes">Limited scan: URL only.</p>
+        {% endif %}
+      </div>
+      {% endif %}
       {% endif %}
 
       <button type="button" class="toggle-btn" onclick="toggleHistory()" aria-expanded="false" aria-controls="historyBox">
