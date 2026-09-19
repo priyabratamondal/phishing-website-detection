@@ -75,7 +75,7 @@ class Prediction:
         return self.label.startswith("Phishing")
 
     def as_text(self) -> str:
-        return f"{self.label} ({self.confidence:.0%} confidence)"
+        return self.label
 
 
 def _frame(features: dict, columns: list[str]) -> pd.DataFrame:
